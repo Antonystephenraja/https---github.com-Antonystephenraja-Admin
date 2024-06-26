@@ -70,7 +70,7 @@ const handleSubmit = async(e) =>
     const formData_1 = { data: formData}; 
 
     const response_data = await fetch(
-      'http://43.204.133.45:4000/sensor/Creating_project',
+      'http://localhost:4000/sensor/Creating_project',
       {
         method: 'POST',
         headers: {
@@ -84,7 +84,7 @@ const handleSubmit = async(e) =>
       console.log("yes")
     }else{
       console.log("no")
-          let insertLink = `http://43.204.133.45:4000/sensor/insertProjectData?projectName=${projectName}`;
+          let insertLink = `http://localhost:4000/sensor/insertProjectData?projectName=${projectName}`;
         parameterValues.forEach((value, index) => {
           insertLink += `&${value}={insert value}`;
         });

@@ -12,7 +12,7 @@ const Login = () => {
       const Email = document.getElementById('username').value;
       const Password = document.getElementById('password').value;
 
-      const response = await fetch('http://43.204.133.45:4000/sensor/login', {
+      const response = await fetch('http://localhost:4000/sensor/login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

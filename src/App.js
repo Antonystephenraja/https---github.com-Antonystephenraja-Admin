@@ -27,8 +27,10 @@ const App = () => {
 const [Tof_data,setTofdata]=useState('')
 const [projectData, setProjectData] = useState([]);
 const[chartdata,setChartData]=useState([]);
+const[ReportData,setReportData]=useState([])
 
   let controls =localStorage.getItem("Controles");
+
 
   useEffect(()=>{
     fetch_tof_fata();
@@ -47,7 +49,7 @@ const[chartdata,setChartData]=useState([]);
 
 const fetch_tof_fata =async()=>{
   try{
-    const response = await fetch("http://43.204.133.45:4000/sensor/BPCL_READ");
+    const response = await fetch("http://localhost:4000/sensor/BPCL_READ");
     const info = await response.json();
     setTofdata(info.data)
     
@@ -57,16 +59,25 @@ const fetch_tof_fata =async()=>{
 }
 
 
-
-
 const fetchProductData = async () => {
   try {
       const projectName = localStorage.getItem('Project');
-    
-      const response = await axios (`http://43.204.133.45:4000/sensor/displayProjectData?project=${projectName}`);
+      const Count =localStorage.getItem('CountReportData')
+
+      let Count_final =0;
+      if(Count == null){
+        Count_final =500;
+      }else{
+        Count_final =localStorage.getItem('CountReportData')
+      }
+
+      const response = await axios (`http://localhost:4000/sensor/displayProjectData?project=${projectName}`);
+      const report = await axios(`http://localhost:4000/sensor/DisplayProjectReport?project=${projectName}&Count=${Count_final}`);
+
       if(response.data.success)
       {
           setProjectData(response.data.data);
+          setReportData(report.data.data);
           const modifiedData = response.data.data.map(item =>
             {
               if(item.Time && typeof item.Time === 'string')
@@ -79,7 +90,6 @@ const fetchProductData = async () => {
               const minutes = parseInt(dateParts[4]);
               const seconds = parseInt(dateParts[5]);
               const meridian = dateParts[6];
-
               if (meridian === 'pm' && hours !== 12) {
                   hours += 12;
               }
@@ -89,18 +99,18 @@ const fetchProductData = async () => {
             }
             else
             {
-                return item;
+              return item;
             }
           }
         );    
       }
       else
       {
-          console.log('cant fetch project data');
+        console.log('cant fetch project data');
       }
       
   } catch (error) {
-      console.error('Error fetching product data:', error);
+    console.error('Error fetching product data:', error);
   }
 }
 
@@ -110,7 +120,7 @@ const chartdatafetch =async()=>{
     const  chartlength =sessionStorage.getItem("chartLength");
     const  sensorname = sessionStorage.getItem("Chart_status");
     const projectName = localStorage.getItem('Project');
-    const response = await axios(`http://43.204.133.45:4000/sensor/project_all_data?project=${projectName}&sensorname=${sensorname}&chartlength=${chartlength}`);
+    const response = await axios(`http://localhost:4000/sensor/project_all_data?project=${projectName}&sensorname=${sensorname}&chartlength=${chartlength}`);
     if(response.data.success){
         setChartData(response.data.data);
     }else{
@@ -155,13 +165,14 @@ const chartdatafetch =async()=>{
               <Route path="/" element={<Source_Outlet/>}>
                 <Route index element={<Source_MainPage 
                 all_sensor_data = {projectData}
-
                 />} />
                 <Route path="Graph" element={<GraphPage
                 all_sensor_data = {projectData}
                 Chartdata={chartdata}
                 />} />
-                <Route path="Report" element={<Reports_Page/>} />
+                <Route path="Report" element={<Reports_Page
+                  report_data={ReportData}
+                />} />
                 <Route path="Settings" element={<Settings_Page/>} />
               </Route>
             )}

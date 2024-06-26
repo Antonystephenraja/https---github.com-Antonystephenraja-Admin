@@ -26,7 +26,6 @@
           },
       }]
     }
-    
     const options ={
       plugins:{
         // legend:true,
@@ -73,27 +72,28 @@
       const CollectData=(event)=>{
         const inputValue = event.target.value;
         if (/^\d*$/.test(inputValue)) {
-          
           setInput(inputValue);
         }
       }
-
       const handleKeyDown = (event) => {
         if (event.key === 'Enter') {
           console.log("error")
-          
           if(inputvalues == ""){
             toast.error('Error Saving!!');
           }else{
-              sessionStorage.setItem("chartLength",inputvalues);
+            console.log("value",inputvalues)
+            sessionStorage.setItem("chartLength",inputvalues);
+            const a = sessionStorage.getItem("chartLength");
+            setLineSliderValues(a)
           }
-          
         }
       };
+
+      const range =sessionStorage.getItem("chartLength");
+      console.log(range)
     return (
       <div>
         <div className='flex p-2 mt-2 ml-2 mb-2 rounded-md border bottom-1 bg-slate-400'>
-          
           <div className='flex gap-2 w-[99%] overflow-auto' style={{scrollbarWidth : 'none'}}>
           {
                 Object.keys(cardData)
@@ -129,8 +129,8 @@
                 thumbClassName="w-5 h-50 bg-[#2d2d2d] rounded-full flex items-center justify-center cursor-pointer text-white font-medium text-xs hover:scale-110"
                 trackClassName="w-1 rounded-full bg-gray-300"
                 min={0}
-                max={1000}
-                defaultValue={[0, 1000]}
+                max={range}
+                defaultValue={[0, range]}
                 renderThumb={(props, state) => (
                   <div {...props}>{state.valueNow}</div>
                 )}
@@ -141,8 +141,9 @@
                 onChange={(value) => handleLineSliderChange(value)}
               />
             </div>
+            {/* width={1700} height={800}  */}
             <div className='w-full h-full'>
-              <Line data={data} width={1100} height={500}  options={options} />
+              <Line data={data} width={1000} height={500}  options={options} />
             </div>
           </div>
         </div>
